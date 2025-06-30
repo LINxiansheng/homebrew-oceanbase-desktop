@@ -6,7 +6,6 @@ cask 'oceanbase-desktop' do
   name 'https://open.oceanbase.com/'
   desc 'OceanBase Desktop - A GUI tool for installing and managing OceanBase'
   homepage 'https://www.oceanbase.com/'
-  license "Apache-2.0"
 
   depends_on cask: 'orbstack'
 
