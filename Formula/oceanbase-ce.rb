@@ -1,4 +1,4 @@
-class OceanbaseCe < Formula
+class OceanbaseDesktop < Formula
   desc "A wrapper to run oceanbase-ce using docker containers"
   homepage "https://open.oceanbase.com/"
   url "https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/obdesktop/4.3.5.0/OceanBase-Desktop-1.0.0-arm64.dmg"
