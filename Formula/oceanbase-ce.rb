@@ -1,29 +1,30 @@
 class OceanbaseCe < Formula
   desc "A wrapper to run oceanbase-ce using docker containers"
-  homepage "https://github.com/chris-sun-star/oceanbase-ce"
-  url "https://github.com/chris-sun-star/homebrew-oceanbase-ce/archive/refs/tags/v0.0.2.tar.gz"
-  sha256 "0f36cd48a4d103b62f27b4364ebd3b4c35a8c4a1cb232d421f0c525b4abc6886"
+  homepage "https://open.oceanbase.com/"
+  url "https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/obdesktop/4.3.5.0/OceanBase-Desktop-1.0.0-arm64.dmg"
+  sha256 "10b82028247f3fb9699659cdbe64d9280728a10f5155f07277f7f1ccb5d5c620"
   license "Apache-2.0"
 
+  depends_on "orbstack"  # 指定依赖 OrbStack
+
   def install
-    ENV.prepend_path "PATH", "/usr/local/bin"
-    bin.install "src/oceanbase-ce.sh" => "oceanbase-ce"
-    system "docker", "pull", "quay.io/oceanbase/oceanbase-ce"
+    system "hdiutil", "attach", "-nobrowse", "OceanBase-Desktop-1.0.0-arm64.dmg"
+    system "cp", "-r", "/Volumes/OceanBase Desktop/OceanBase-Desktop.app", "#{prefix}/OceanBase-Desktop.app"
+    system "hdiutil", "detach", "/Volumes/OceanBase Desktop"
+    bin.install_symlink "#{prefix}/OceanBase-Desktop.app/Contents/MacOS/OceanBase-Desktop" => "obdesktop"
   end
 
-  def post_install
-    chmod 0755, bin/'oceanbase-ce'
-    puts "Permissions set to 0755 for #{bin/'oceanbase-ce'}"
+  def caveats
+    <<~EOS
+      OceanBase Desktop has been installed. The app is located at:
+        #{prefix}/OceanBase-Desktop.app
+      A symlink has been created, you can start it using:
+        obdesktop
+    EOS
   end
 
-  def test
-    ENV.prepend_path "PATH", "/usr/local/bin"
-    system "oceanbase-ce", "-h"
-  end
-
-  def post_uninstall
-    ENV.prepend_path "PATH", "/usr/local/bin"
-    system "docker", "rm", "-f", "oceanbase-ce"
-    system "rm", "-rf", "~/.oceanbase-ce/*"
+  test do
+    # 简单测试以确保 Formula 工作。可以尝试启动应用或检查文件存在性。
+    assert_predicate "#{prefix}/OceanBase-Desktop.app", :exist?, "App is not installed"
   end
 end
