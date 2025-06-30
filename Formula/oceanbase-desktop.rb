@@ -5,12 +5,20 @@ class OceanbaseDesktop < Formula
   sha256 "10b82028247f3fb9699659cdbe64d9280728a10f5155f07277f7f1ccb5d5c620"
   license "Apache-2.0"
 
-  depends_on "orbstack"  # 指定依赖 OrbStack
-
   def install
-    system "hdiutil", "attach", "-nobrowse", "OceanBase-Desktop-1.0.0-arm64.dmg"
+    # Get the downloaded DMG file path
+    dmg_file = Pathname.new(cached_download).basename.to_s
+    
+    # Mount the DMG
+    system "hdiutil", "attach", "-nobrowse", dmg_file
+    
+    # Copy the app to the prefix
     system "cp", "-r", "/Volumes/OceanBase Desktop/OceanBase-Desktop.app", "#{prefix}/OceanBase-Desktop.app"
+    
+    # Unmount the DMG
     system "hdiutil", "detach", "/Volumes/OceanBase Desktop"
+    
+    # Create symlink
     bin.install_symlink "#{prefix}/OceanBase-Desktop.app/Contents/MacOS/OceanBase-Desktop" => "obdesktop"
   end
 
@@ -24,7 +32,13 @@ class OceanbaseDesktop < Formula
   end
 
   test do
-    # 简单测试以确保 Formula 工作。可以尝试启动应用或检查文件存在性。
+    # Test that the app is installed
     assert_predicate "#{prefix}/OceanBase-Desktop.app", :exist?, "App is not installed"
+    
+    # Test that the symlink exists
+    assert_predicate bin/"obdesktop", :exist?, "Symlink was not created"
+    
+    # Test that the executable exists
+    assert_predicate "#{prefix}/OceanBase-Desktop.app/Contents/MacOS/OceanBase-Desktop", :executable?, "Executable is not found or not executable"
   end
 end
